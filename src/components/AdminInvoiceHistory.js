@@ -23,11 +23,11 @@ export default function AdminInvoiceHistory() {
     }
   };
 
-  // Download PDF
+  // Download PDF (FIXED URL)
   const downloadPdf = async (siteId, m, y) => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/api/invoice/download/${siteId}?month=${m}&year=${y}`,
+        `${API_BASE_URL}/admin/invoice/pdf/${siteId}?month=${m}&year=${y}`,
         {
           headers: { Authorization: "Bearer " + token },
           responseType: "blob"
@@ -54,7 +54,7 @@ export default function AdminInvoiceHistory() {
       {invoices.length === 0 && <p>No invoices yet.</p>}
 
       {invoices.length > 0 && (
-        <table border="1" width="100%" style={{ marginTop: 20 }}>
+        <table border="1" width="100%" style={{ marginTop: 20, borderCollapse: "collapse" }}>
           <thead>
             <tr>
               <th>Site</th>

@@ -22,7 +22,11 @@ export default function BillGeneratorForm({ clients }) {
         headers: { Authorization: "Bearer " + token },
       });
 
-      const filtered = res.data.filter((s) => s.client.id === Number(clientId));
+      // Filter sites belonging to that client
+      const filtered = res.data.filter(
+        (s) => s.client?.id === Number(clientId)
+      );
+
       setSites(filtered);
 
     } catch (err) {
@@ -92,6 +96,7 @@ export default function BillGeneratorForm({ clients }) {
         }}
       >
         <option value="">Select Client</option>
+
         {clients.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name} — {c.companyName}
@@ -107,6 +112,7 @@ export default function BillGeneratorForm({ clients }) {
         onChange={(e) => setSelectedSite(e.target.value)}
       >
         <option value="">Select Site</option>
+
         {sites.map((s) => (
           <option key={s.id} value={s.id}>
             {s.siteName} — {s.location}

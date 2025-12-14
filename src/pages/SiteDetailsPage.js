@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import EnergyGraph from "../components/EnergyGraph";
+import API_BASE_URL from "../config";   // ✅ USE BASE URL
 
 export default function SiteDetailsPage() {
 
@@ -19,11 +20,15 @@ export default function SiteDetailsPage() {
   // Load site details
   const loadSite = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/client/site/${siteId}`, {
-        headers: { Authorization: "Bearer " + token }
-      });
+      const res = await axios.get(
+        `${API_BASE_URL}/client/site/${siteId}`,
+        {
+          headers: { Authorization: "Bearer " + token }
+        }
+      );
       setSite(res.data);
     } catch (err) {
+      console.error(err);
       alert("Failed to load site details");
     }
   };
@@ -32,12 +37,14 @@ export default function SiteDetailsPage() {
   const loadMonthlySummary = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/readings/monthly-summary/${siteId}`,
-        { headers: { Authorization: "Bearer " + token } }
+        `${API_BASE_URL}/api/readings/monthly-summary/${siteId}`,
+        {
+          headers: { Authorization: "Bearer " + token }
+        }
       );
       setMonthly(res.data);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 

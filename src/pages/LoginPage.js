@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";   // ✅ Import backend BASE URL
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -7,7 +8,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:8080/auth/login", {
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, {
         email,
         password,
       });
@@ -15,9 +16,11 @@ export default function LoginPage() {
       const token = res.data.token;
       const role = res.data.role;
 
+      // Save to Local Storage
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
 
+      // Redirect based on role
       if (role === "ADMIN") {
         window.location.href = "/admin";
       } else {
@@ -25,24 +28,38 @@ export default function LoginPage() {
       }
 
     } catch (err) {
-      alert("Invalid Login");
+      console.error(err);
+      alert("Invalid email or password");
     }
   };
 
   return (
     <div style={{ padding: 20 }}>
       <h2>Login</h2>
+
       <input
         placeholder="Email"
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
-      /><br /><br />
+        style={{ width: "100%", padding: 8 }}
+      />
+      <br /><br />
+
       <input
         placeholder="Password"
         type="password"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
-      /><br /><br />
+        style={{ width: "100%", padding: 8 }}
+      />
+      <br /><br />
 
-      <button onClick={handleLogin}>Login</button>
+      <button
+        onClick={handleLogin}
+        style={{ padding: "10px 20px", cursor: "pointer" }}
+      >
+        Login
+      </button>
     </div>
   );
 }

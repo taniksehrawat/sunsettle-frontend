@@ -5,7 +5,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import SiteDetailsPage from "./pages/SiteDetailsPage";
 
-import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute";   // ✅ FIXED PATH
 
 function App() {
   return (

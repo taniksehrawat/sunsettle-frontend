@@ -3,6 +3,7 @@ import axios from "axios";
 import API_BASE_URL from "../config";   // ✅ USE CONFIGURED BASE URL
 
 export default function UploadCsvForm({ clients }) {
+
   const [selectedClient, setSelectedClient] = useState("");
   const [sites, setSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState("");
@@ -10,17 +11,13 @@ export default function UploadCsvForm({ clients }) {
 
   const token = localStorage.getItem("token");
 
-  // Fetch sites for selected client
+  // 🔹 Fetch all sites and filter by client
   const loadSites = async (clientId) => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/admin/sites`,     // ✅ UPDATED URL
-        {
-          headers: { Authorization: "Bearer " + token }
-        }
-      );
+      const res = await axios.get(`${API_BASE_URL}/admin/sites`, {
+        headers: { Authorization: "Bearer " + token }
+      });
 
-      // Filter sites belonging to this client
       const clientSites = res.data.filter(
         (site) => site.client.id === Number(clientId)
       );
@@ -28,14 +25,14 @@ export default function UploadCsvForm({ clients }) {
       setSites(clientSites);
     } catch (err) {
       console.error(err);
-      alert("Failed to load client sites");
+      alert("Failed to load sites for this client");
     }
   };
 
-  // Upload CSV
+  // 🔹 Upload CSV file
   const handleUpload = async () => {
     if (!file || !selectedSite) {
-      alert("⚠️ Please select a site and upload CSV file");
+      alert("⚠️ Please select a site and upload a CSV file");
       return;
     }
 
@@ -44,7 +41,7 @@ export default function UploadCsvForm({ clients }) {
 
     try {
       await axios.post(
-        `${API_BASE_URL}/admin/meter/upload/${selectedSite}`, // ✅ UPDATED URL
+        `${API_BASE_URL}/admin/meter/upload/${selectedSite}`,  // ✅ Correct endpoint
         formData,
         {
           headers: {
@@ -55,9 +52,10 @@ export default function UploadCsvForm({ clients }) {
       );
 
       alert("✅ CSV Uploaded Successfully!");
+
     } catch (err) {
       console.error(err);
-      alert("❌ CSV Upload Failed");
+      alert("❌ Failed to upload CSV");
     }
   };
 
@@ -65,13 +63,13 @@ export default function UploadCsvForm({ clients }) {
     <div style={{ padding: 20, marginTop: 20, border: "1px solid #ccc", borderRadius: 6 }}>
       <h3>Upload Meter CSV</h3>
 
-      {/* Select Client */}
+      {/* 🔹 Select Client */}
       <select
         style={{ width: "100%", padding: 8 }}
         onChange={(e) => {
           setSelectedClient(e.target.value);
-          setSelectedSite("");        // reset site
-          loadSites(e.target.value);  // load related sites
+          setSelectedSite("");
+          loadSites(e.target.value);   // 🔥 Load sites for selected client
         }}
       >
         <option value="">Select Client</option>
@@ -84,7 +82,7 @@ export default function UploadCsvForm({ clients }) {
 
       <br /><br />
 
-      {/* Select Site */}
+      {/* 🔹 Select Site */}
       <select
         style={{ width: "100%", padding: 8 }}
         value={selectedSite}
@@ -100,19 +98,12 @@ export default function UploadCsvForm({ clients }) {
 
       <br /><br />
 
-      {/* CSV File Input */}
-      <input
-        type="file"
-        accept=".csv"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
+      {/* 🔹 File Input */}
+      <input type="file" accept=".csv" onChange={(e) => setFile(e.target.files[0])} />
 
       <br /><br />
 
-      <button
-        onClick={handleUpload}
-        style={{ padding: "10px 20px", cursor: "pointer" }}
-      >
+      <button onClick={handleUpload} style={{ padding: "10px 20px", cursor: "pointer" }}>
         Upload CSV
       </button>
     </div>

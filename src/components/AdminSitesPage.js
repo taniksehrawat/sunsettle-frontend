@@ -13,7 +13,7 @@ export default function AdminSitesPage() {
   const loadSites = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/admin/sites`, {
-        headers: { Authorization: "Bearer " + token }
+        headers: { Authorization: "Bearer " + token },
       });
 
       setSites(res.data);
@@ -30,7 +30,14 @@ export default function AdminSitesPage() {
       {sites.length === 0 && <p>No sites found.</p>}
 
       {sites.length > 0 && (
-        <table border="1" style={{ width: "100%", marginTop: 20 }}>
+        <table
+          border="1"
+          style={{
+            width: "100%",
+            marginTop: 20,
+            borderCollapse: "collapse",
+          }}
+        >
           <thead>
             <tr>
               <th>Site Name</th>

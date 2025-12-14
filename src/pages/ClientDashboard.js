@@ -18,13 +18,11 @@ export default function ClientDashboard() {
     loadMySites();
   }, []);
 
-  // Load sites for logged-in client
+  // Fetch logged-in client's sites
   const loadMySites = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/client/my-sites`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
+        headers: { Authorization: "Bearer " + token },
       });
       setSites(res.data);
     } catch (err) {
@@ -38,7 +36,10 @@ export default function ClientDashboard() {
 
       {/* ------------------ SITE LIST ------------------ */}
       <h2>My Sites</h2>
+
       <div style={{ marginBottom: 20 }}>
+        {sites.length === 0 && <p>No sites found.</p>}
+
         {sites.map((s) => (
           <div
             key={s.id}
@@ -49,7 +50,7 @@ export default function ClientDashboard() {
               border: "1px solid #ccc",
               borderRadius: 5,
               backgroundColor: "#f7f7f7",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             <b>{s.siteName}</b> — {s.location}
@@ -76,7 +77,10 @@ export default function ClientDashboard() {
 
       <br /><br />
 
-      <button onClick={() => setShowGraph(!showGraph)} disabled={!selectedSite}>
+      <button
+        onClick={() => setShowGraph(!showGraph)}
+        disabled={!selectedSite}
+      >
         {showGraph ? "Hide Graph" : "Show Energy Graph"}
       </button>
 

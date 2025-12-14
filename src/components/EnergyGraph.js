@@ -19,13 +19,13 @@ export default function EnergyGraph({ siteId }) {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    loadGraph();
+    if (siteId) loadGraph();
   }, [siteId]);
 
   const loadGraph = async () => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/api/readings/daily-summary/${siteId}`,
+        `${API_BASE_URL}/client/readings/daily-summary/${siteId}`,   // ✅ FIXED ENDPOINT
         {
           headers: { Authorization: "Bearer " + token },
         }

@@ -11,7 +11,7 @@ export default function BillHistory() {
     loadBills();
   }, []);
 
-  // Load all client bills
+  // Load all bills belonging to this client
   const loadBills = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/client/bills`, {
@@ -19,15 +19,16 @@ export default function BillHistory() {
       });
       setBills(res.data);
     } catch (err) {
+      console.error(err);
       alert("Failed to load bill history");
     }
   };
 
-  // Download invoice PDF
+  // Download invoice PDF (CLIENT version)
   const downloadPdf = async (siteId, month, year) => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/admin/invoice/pdf/${siteId}?month=${month}&year=${year}`,
+        `${API_BASE_URL}/client/invoice/pdf/${siteId}?month=${month}&year=${year}`,
         {
           headers: { Authorization: "Bearer " + token },
           responseType: "blob",
@@ -41,8 +42,10 @@ export default function BillHistory() {
       a.href = url;
       a.download = `invoice_${year}_${month}.pdf`;
       a.click();
+      window.URL.revokeObjectURL(url);
 
     } catch (err) {
+      console.error(err);
       alert("Failed to download invoice");
     }
   };
@@ -60,7 +63,7 @@ export default function BillHistory() {
               <th>Site</th>
               <th>Month</th>
               <th>Export (kWh)</th>
-              <th>Charge (₹)</th>
+              <th>Energy Charge (₹)</th>
               <th>GST (₹)</th>
               <th>Total (₹)</th>
               <th>Download</th>
@@ -79,7 +82,9 @@ export default function BillHistory() {
 
                 <td>
                   <button
-                    onClick={() => downloadPdf(b.siteId, b.monthNumber, b.year)}
+                    onClick={() =>
+                      downloadPdf(b.siteId, b.monthNumber, b.year)
+                    }
                   >
                     📄 PDF
                   </button>
