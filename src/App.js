@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -7,15 +7,19 @@ import SiteDetailsPage from "./pages/SiteDetailsPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";   // ✅ FIXED PATH
 
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
+        {/* Redirect "/" → "/login" */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         {/* LOGIN */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* ADMIN DASHBOARD (Protected) */}
+        {/* ADMIN DASHBOARD */}
         <Route
           path="/admin"
           element={
@@ -25,7 +29,7 @@ function App() {
           }
         />
 
-        {/* CLIENT DASHBOARD (Protected) */}
+        {/* CLIENT DASHBOARD */}
         <Route
           path="/client"
           element={
@@ -35,7 +39,7 @@ function App() {
           }
         />
 
-        {/* CLIENT SITE DETAILS PAGE (Protected) */}
+        {/* CLIENT SITE DETAILS */}
         <Route
           path="/client/site/:siteId"
           element={
