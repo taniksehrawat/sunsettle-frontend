@@ -15,13 +15,7 @@ export default function AdminDashboard() {
 
   const [clients, setClients] = useState([]);
 
-  const [showAddClient, setShowAddClient] = useState(false);
-  const [showAddSite, setShowAddSite] = useState(false);
-  const [showUploadCsv, setShowUploadCsv] = useState(false);
-  const [showBillGenerator, setShowBillGenerator] = useState(false);
-  const [showAllSites, setShowAllSites] = useState(false);
-  const [showAdminBills, setShowAdminBills] = useState(false);
-  const [showInvoices, setShowInvoices] = useState(false);
+  const [activeView, setActiveView] = useState(""); // 👈 SINGLE SOURCE OF TRUTH
 
   const token = localStorage.getItem("token");
 
@@ -31,51 +25,80 @@ export default function AdminDashboard() {
 
   const loadClients = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/clients`, {
-        headers: { Authorization: "Bearer " + token },
-      });
+      const res = await axios.get(`${API_BASE_URL}/api/clients`);
       setClients(res.data);
-    } catch {
+    } catch (err) {
       alert("Failed to load clients");
     }
   };
 
-  const resetAll = () => {
-    setShowAddClient(false);
-    setShowAddSite(false);
-    setShowUploadCsv(false);
-    setShowBillGenerator(false);
-    setShowAllSites(false);
-    setShowAdminBills(false);
-    setShowInvoices(false);
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
   };
 
   return (
     <div style={{ padding: 20 }}>
 
-      <h1>Admin Dashboard</h1>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h1>Admin Dashboard</h1>
+        <button onClick={logout}>Logout</button>
+      </div>
 
-      <button onClick={() => { resetAll(); setShowAddClient(true); }}>➕ Add Client</button>
-      <button onClick={() => { resetAll(); setShowAddSite(true); }}>➕ Add Site</button>
+      {/* Buttons */}
+      <div style={{ marginTop: 20 }}>
+        <button onClick={() => setActiveView("addClient")}>➕ Add Client</button>
+        <button onClick={() => setActiveView("addSite")}>➕ Add Site</button>
+        <button onClick={() => setActiveView("uploadCsv")}>📤 Upload CSV</button>
+        <button onClick={() => setActiveView("generateBill")}>🧾 Generate Bill</button>
+        <button onClick={() => setActiveView("sites")}>📍 View Sites</button>
+        <button onClick={() => setActiveView("bills")}>📘 Bills</button>
+        <button onClick={() => setActiveView("invoices")}>📄 Invoices</button>
+      </div>
 
-      {showAddClient && (
-        <AddClientForm onClientAdded={loadClients} />
+      {/* Views */}
+      {activeView === "addClient" && (
+        <AddClientForm onSuccess={loadClients} />
       )}
 
-      {showAddSite && (
-        <AddSiteForm clients={clients} onSiteAdded={loadClients} />
+      {activeView === "addSite" && (
+        <AddSiteForm clients={clients} />
       )}
 
+      {activeView === "uploadCsv" && (
+        <UploadCsvForm clients={clients} />
+      )}
+
+      {activeView === "generateBill" && (
+        <BillGeneratorForm clients={clients} />
+      )}
+
+      {activeView === "sites" && <AdminSitesPage />}
+      {activeView === "bills" && <AdminBillHistoryPage />}
+      {activeView === "invoices" && <AdminInvoiceHistory />}
+
+      {/* Clients List */}
       <h2 style={{ marginTop: 30 }}>Clients</h2>
 
       {clients.length === 0 && <p>No clients found.</p>}
 
-      {clients.map((c) => (
-        <div key={c.id} style={{ border: "1px solid #ccc", padding: 10, marginBottom: 8 }}>
-          <b>{c.name}</b> — {c.companyName}<br />
+      {clients.map(c => (
+        <div
+          key={c.id}
+          style={{
+            padding: 10,
+            border: "1px solid #ccc",
+            marginBottom: 10,
+            borderRadius: 5
+          }}
+        >
+          <b>{c.name}</b> — {c.companyName || "-"}
+          <br />
           <small>{c.email}</small>
         </div>
       ))}
+
     </div>
   );
 }
