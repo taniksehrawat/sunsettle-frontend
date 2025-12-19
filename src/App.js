@@ -1,56 +1,25 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import SiteDetailsPage from "./pages/SiteDetailsPage";
 
-
-
-
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
+        {/* Admin Demo Routes */}
+        <Route path="/" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
 
-        {/* Redirect "/" → "/login" */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Client View */}
+        <Route path="/client/:clientId" element={<ClientDashboard />} />
 
-        {/* LOGIN */}
-        <Route path="/login" element={<LoginPage />} />
-
-        {/* ADMIN DASHBOARD */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute role="ADMIN">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* CLIENT DASHBOARD */}
-        <Route
-          path="/client"
-          element={
-            <ProtectedRoute role="CLIENT">
-              <ClientDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* CLIENT SITE DETAILS */}
-        <Route
-          path="/client/site/:siteId"
-          element={
-            <ProtectedRoute role="CLIENT">
-              <SiteDetailsPage />
-            </ProtectedRoute>
-          }
-        />
-
+        {/* Site Details */}
+        <Route path="/site/:siteId" element={<SiteDetailsPage />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
