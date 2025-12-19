@@ -20,7 +20,7 @@ export default function AddSiteForm({ clients }) {
 
     try {
       await axios.post(
-        `${API_BASE_URL}/admin/site/${clientId}`,
+        `${API_BASE_URL}/api/clients/${clientId}/site`,
         {
           siteName,
           location,
