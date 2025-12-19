@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import LoginPage from "./pages/LoginPage";
+
 import AdminDashboard from "./pages/AdminDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import SiteDetailsPage from "./pages/SiteDetailsPage";
 
-import ProtectedRoute from "./components/ProtectedRoute";   // ✅ FIXED PATH
+
 
 
 function App() {
