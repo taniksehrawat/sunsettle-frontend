@@ -1,108 +1,55 @@
-import { useState } from "react";
-import axios from "axios";
-import API_BASE_URL from "../config";   // ✅ Use ENV base URL
+import React, { useState } from "react";
+import config from "../config";
 
-export default function AddClientForm({ onClientAdded }) {
+function AddClientForm({ onSuccess }) {
+  const [form, setForm] = useState({
+    userId: 1, // 🔥 DEMO OWNER (important)
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    companyName: ""
+  });
 
-  const [userId, setUserId] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [companyName, setCompanyName] = useState("");
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const token = localStorage.getItem("token");
-
-  const handleSubmit = async () => {
-    if (!userId || !name || !email) {
-      alert("User ID, Name & Email are required!");
-      return;
-    }
-
+  const addClient = async () => {
     try {
-      await axios.post(
-        `${API_BASE_URL}/admin/client/${userId}`,
-        {
-          name,
-          email,
-          phone,
-          address,
-          companyName,
+      const res = await fetch(`${config.API_BASE}/api/clients`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
         },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
+        body: JSON.stringify(form)
+      });
 
-      alert("Client Added Successfully!");
+      if (!res.ok) {
+        throw new Error("Failed");
+      }
 
-      // Reset form
-      setUserId("");
-      setName("");
-      setEmail("");
-      setPhone("");
-      setAddress("");
-      setCompanyName("");
-
-      // Refresh parent list
-      if (onClientAdded) onClientAdded();
-
+      alert("Client added successfully");
+      onSuccess && onSuccess();
     } catch (err) {
       alert("Failed to add client");
+      console.error(err);
     }
   };
 
   return (
-    <div style={{ padding: 20, marginTop: 20, border: "1px solid #ccc", borderRadius: 8 }}>
+    <div>
       <h3>Add Client</h3>
 
-      <input
-        placeholder="User ID (Owner)"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
+      <input name="name" placeholder="Client Name" onChange={handleChange} />
+      <input name="email" placeholder="Client Email" onChange={handleChange} />
+      <input name="phone" placeholder="Phone" onChange={handleChange} />
+      <input name="address" placeholder="Address" onChange={handleChange} />
+      <input name="companyName" placeholder="Company Name" onChange={handleChange} />
 
-      <input
-        placeholder="Client Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <input
-        placeholder="Client Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <input
-        placeholder="Phone"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <input
-        placeholder="Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <input
-        placeholder="Company Name"
-        value={companyName}
-        onChange={(e) => setCompanyName(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <button onClick={handleSubmit} style={{ padding: "10px 20px" }}>
-        Add Client
-      </button>
+      <button onClick={addClient}>Add Client</button>
     </div>
   );
 }
+
+export default AddClientForm;
