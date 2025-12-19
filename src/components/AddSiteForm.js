@@ -1,91 +1,45 @@
 import { useState } from "react";
 import axios from "axios";
-import API_BASE_URL from "../config";   // ✅ USE BASE URL
+import API_BASE_URL from "../config";
 
-export default function AddSiteForm({ clients }) {
+export default function AddSiteForm({ clients, onSiteAdded }) {
+
   const [clientId, setClientId] = useState("");
   const [siteName, setSiteName] = useState("");
   const [location, setLocation] = useState("");
   const [capacityKw, setCapacityKw] = useState("");
 
-  const token = localStorage.getItem("token");
-
-  const handleSubmit = async () => {
-
-    if (!clientId || !siteName || !location || !capacityKw) {
-      alert("❗ Please fill all fields");
-      return;
-    }
-
+  const addSite = async () => {
     try {
-      await axios.post(
-        `${API_BASE_URL}/admin/site/${clientId}`,   // ✅ UPDATED URL
-        {
-          siteName,
-          location,
-          capacityKw: Number(capacityKw),
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
+      await axios.post(`${API_BASE_URL}/admin/site/${clientId}`, {
+        siteName,
+        location,
+        capacityKw
+      });
 
-      alert("✅ Site Added Successfully!");
-      window.location.reload();
-
-    } catch (err) {
-      console.error(err);
-      alert("❌ Failed to add site. Please check the details.");
+      alert("✅ Site added");
+      onSiteAdded(); // refresh clients/sites
+    } catch {
+      alert("❌ Failed to add site");
     }
   };
 
   return (
-    <div style={{ padding: 20, marginTop: 20, border: "1px solid #ccc", borderRadius: 6 }}>
+    <div>
       <h3>Add Site</h3>
 
-      {/* Client Selector */}
-      <select
-        onChange={(e) => setClientId(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      >
+      <select onChange={(e) => setClientId(e.target.value)}>
         <option value="">Select Client</option>
-
-        {clients.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name} — {c.companyName}
-          </option>
+        {clients.map(c => (
+          <option key={c.id} value={c.id}>{c.name}</option>
         ))}
       </select>
 
-      <br /><br />
+      <input placeholder="Site Name" onChange={(e) => setSiteName(e.target.value)} />
+      <input placeholder="Location" onChange={(e) => setLocation(e.target.value)} />
+      <input placeholder="Capacity" type="number" onChange={(e) => setCapacityKw(e.target.value)} />
 
-      <input
-        placeholder="Site Name"
-        onChange={(e) => setSiteName(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <input
-        placeholder="Location"
-        onChange={(e) => setLocation(e.target.value)}
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <input
-        placeholder="Capacity (kW)"
-        onChange={(e) => setCapacityKw(e.target.value)}
-        type="number"
-        style={{ width: "100%", padding: 8 }}
-      /><br /><br />
-
-      <button
-        onClick={handleSubmit}
-        style={{ padding: "10px 20px", cursor: "pointer" }}
-      >
-        Add Site
-      </button>
+      <button onClick={addSite}>Add Site</button>
     </div>
   );
 }

@@ -15,7 +15,6 @@ export default function AdminDashboard() {
 
   const [clients, setClients] = useState([]);
 
-  // Page toggles
   const [showAddClient, setShowAddClient] = useState(false);
   const [showAddSite, setShowAddSite] = useState(false);
   const [showUploadCsv, setShowUploadCsv] = useState(false);
@@ -30,27 +29,17 @@ export default function AdminDashboard() {
     loadClients();
   }, []);
 
-  // Fetch clients
   const loadClients = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/admin/clients`, {
         headers: { Authorization: "Bearer " + token },
       });
-
       setClients(res.data);
-    } catch (err) {
+    } catch {
       alert("Failed to load clients");
     }
   };
 
-  // Logout
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    window.location.href = "/login";
-  };
-
-  // Reset all toggles
   const resetAll = () => {
     setShowAddClient(false);
     setShowAddSite(false);
@@ -64,97 +53,29 @@ export default function AdminDashboard() {
   return (
     <div style={{ padding: 20 }}>
 
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Admin Dashboard</h1>
-        <button onClick={logout} style={{ height: 40 }}>Logout</button>
-      </div>
+      <h1>Admin Dashboard</h1>
 
-      {/* Action Buttons */}
-      <div style={{ marginTop: 20, marginBottom: 20 }}>
+      <button onClick={() => { resetAll(); setShowAddClient(true); }}>➕ Add Client</button>
+      <button onClick={() => { resetAll(); setShowAddSite(true); }}>➕ Add Site</button>
 
-        <button
-          onClick={() => { resetAll(); setShowAddClient(!showAddClient); }}
-          style={{ marginRight: 10 }}
-        >
-          {showAddClient ? "Close Add Client" : "➕ Add Client"}
-        </button>
+      {showAddClient && (
+        <AddClientForm onClientAdded={loadClients} />
+      )}
 
-        <button
-          onClick={() => { resetAll(); setShowAddSite(!showAddSite); }}
-          style={{ marginRight: 10 }}
-        >
-          {showAddSite ? "Close Add Site" : "➕ Add Site"}
-        </button>
+      {showAddSite && (
+        <AddSiteForm clients={clients} onSiteAdded={loadClients} />
+      )}
 
-        <button
-          onClick={() => { resetAll(); setShowUploadCsv(!showUploadCsv); }}
-          style={{ marginRight: 10 }}
-        >
-          {showUploadCsv ? "Close Upload CSV" : "📤 Upload Meter CSV"}
-        </button>
-
-        <button
-          onClick={() => { resetAll(); setShowBillGenerator(!showBillGenerator); }}
-          style={{ marginRight: 10 }}
-        >
-          {showBillGenerator ? "Close Bill Generator" : "🧾 Generate Bill"}
-        </button>
-
-        <button
-          onClick={() => { resetAll(); setShowAllSites(!showAllSites); }}
-          style={{ marginRight: 10 }}
-        >
-          {showAllSites ? "Close All Sites" : "📍 View All Sites"}
-        </button>
-
-        <button
-          onClick={() => { resetAll(); setShowAdminBills(!showAdminBills); }}
-          style={{ marginRight: 10 }}
-        >
-          {showAdminBills ? "Close Bill History" : "📘 All Bills"}
-        </button>
-
-        <button
-          onClick={() => { resetAll(); setShowInvoices(!showInvoices); }}
-        >
-          {showInvoices ? "Close Invoices" : "📄 Invoice History"}
-        </button>
-
-      </div>
-
-      {/* Render Sections */}
-      {showAddClient && <AddClientForm onClientAdded={loadClients} />}
-      {showAddSite && <AddSiteForm clients={clients} />}
-      {showUploadCsv && <UploadCsvForm clients={clients} />}
-      {showBillGenerator && <BillGeneratorForm clients={clients} />}
-      {showAllSites && <AdminSitesPage />}
-      {showAdminBills && <AdminBillHistoryPage />}
-      {showInvoices && <AdminInvoiceHistory />}
-
-      {/* Client List */}
       <h2 style={{ marginTop: 30 }}>Clients</h2>
 
-      <div style={{ marginTop: 10 }}>
-        {clients.length === 0 && <p>No clients found.</p>}
+      {clients.length === 0 && <p>No clients found.</p>}
 
-        {clients.map((c) => (
-          <div
-            key={c.id}
-            style={{
-              padding: 10,
-              border: "1px solid #ccc",
-              marginBottom: 10,
-              borderRadius: 5,
-            }}
-          >
-            <b>{c.name}</b> — {c.companyName}
-            <br />
-            <small>{c.email}</small>
-          </div>
-        ))}
-      </div>
-
+      {clients.map((c) => (
+        <div key={c.id} style={{ border: "1px solid #ccc", padding: 10, marginBottom: 8 }}>
+          <b>{c.name}</b> — {c.companyName}<br />
+          <small>{c.email}</small>
+        </div>
+      ))}
     </div>
   );
 }

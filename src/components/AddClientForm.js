@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import config from "../config";
+import { useState } from "react";
+import axios from "axios";
+import API_BASE_URL from "../config";
 
-function AddClientForm({ onSuccess }) {
+export default function AddClientForm({ onClientAdded }) {
+
   const [form, setForm] = useState({
-    userId: 1, // 🔥 DEMO OWNER (important)
+    userId: 1,
     name: "",
     email: "",
     phone: "",
@@ -11,45 +13,28 @@ function AddClientForm({ onSuccess }) {
     companyName: ""
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const addClient = async () => {
     try {
-      const res = await fetch(`${config.API_BASE}/api/clients`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(form)
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed");
-      }
-
-      alert("Client added successfully");
-      onSuccess && onSuccess();
-    } catch (err) {
-      alert("Failed to add client");
-      console.error(err);
+      await axios.post(`${API_BASE_URL}/admin/client`, form);
+      alert("✅ Client added");
+      onClientAdded();          // 🔥 THIS WAS MISSING
+    } catch {
+      alert("❌ Failed to add client");
     }
   };
 
   return (
     <div>
       <h3>Add Client</h3>
-
-      <input name="name" placeholder="Client Name" onChange={handleChange} />
-      <input name="email" placeholder="Client Email" onChange={handleChange} />
+      <input name="name" placeholder="Name" onChange={handleChange} />
+      <input name="email" placeholder="Email" onChange={handleChange} />
       <input name="phone" placeholder="Phone" onChange={handleChange} />
       <input name="address" placeholder="Address" onChange={handleChange} />
-      <input name="companyName" placeholder="Company Name" onChange={handleChange} />
-
+      <input name="companyName" placeholder="Company" onChange={handleChange} />
       <button onClick={addClient}>Add Client</button>
     </div>
   );
 }
-
-export default AddClientForm;
