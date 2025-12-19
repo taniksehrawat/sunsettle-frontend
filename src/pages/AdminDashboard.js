@@ -31,7 +31,7 @@ export default function AdminDashboard() {
 
   const loadClients = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/admin/clients`, {
+      const res = await axios.get(`${API_BASE_URL}/api/clients`, {
         headers: { Authorization: "Bearer " + token },
       });
       setClients(res.data);
